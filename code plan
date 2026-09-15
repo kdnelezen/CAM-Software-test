@@ -1,0 +1,76 @@
+
+### `docs/requirements.md`
+```md
+# Requirements
+
+## Product Summary
+
+This project is intended to become CAM software that accepts a 3D CAD file, computes toolpaths, and generates G-code for CNC machining.
+
+## Primary Objectives
+
+- Import 3D CAD models
+- Prepare models for manufacturing
+- Allow machining setup configuration
+- Generate safe and useful toolpaths
+- Export valid G-code for CNC controllers
+
+## Functional Requirements
+
+### 1. CAD Import
+The software should:
+- Accept at least one 3D CAD file format in the MVP
+- Validate that the imported geometry is usable
+- Display basic model metadata and dimensions
+
+### 2. Job Setup
+The software should allow the user to define:
+- Units
+- Work origin
+- Stock dimensions
+- Material
+- Clearance and safe heights
+
+### 3. Tool Management
+The software should support:
+- Tool definitions
+- Tool diameter
+- Tool length
+- Tool type
+- Feed and speed inputs
+
+### 4. CAM Operations
+The MVP should support:
+- Facing
+- Pocketing
+- Contour/profiling
+- Drilling
+- Finishing passes
+
+### 5. Toolpath Output
+The software should:
+- Generate toolpaths from configured operations
+- Visualize or preview the path
+- Detect obvious invalid paths before export
+
+### 6. G-code Generation
+The software should:
+- Convert toolpaths into G-code
+- Support at least one controller dialect in MVP
+- Export a machine-ready program file
+
+## Non-Functional Requirements
+
+- Clear user workflow
+- Predictable outputs
+- Extensible architecture
+- Safe defaults for machining parameters
+- Reasonable performance for small to medium parts
+
+## Out of Scope for MVP
+
+- Full 5-axis machining
+- Advanced adaptive strategies
+- Multi-machine orchestration
+- Enterprise job management
+- Full production simulation with physics
