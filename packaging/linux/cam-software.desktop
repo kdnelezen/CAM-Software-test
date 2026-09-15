@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=CAM Software Test
+Comment=Test desktop launcher for CAM Software packaging flows
+Exec=cam-software
+Icon=io.github.kdnelezen.CAMSoftware
+Terminal=false
+Categories=Engineering;

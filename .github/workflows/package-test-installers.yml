@@ -1,0 +1,104 @@
+name: Build test installers
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-packaging:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build desktop app with PyInstaller
+        run: python scripts/build_pyinstaller.py --clean
+
+      - name: Install Inno Setup and NSIS
+        run: choco install innosetup nsis -y
+
+      - name: Build Inno Setup installer
+        shell: pwsh
+        run: ./scripts/build_inno.ps1
+
+      - name: Build NSIS installer
+        shell: pwsh
+        run: ./scripts/build_nsis.ps1
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installers
+          path: |
+            dist/CAMSoftware/**
+            build/windows/inno/CAMSoftwareSetup.exe
+            build/windows/nsis/CAMSoftwareSetup-NSIS.exe
+          if-no-files-found: error
+
+  linux-packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder desktop-file-utils libfuse2 python3-tk squashfs-tools curl
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build desktop app with PyInstaller
+        run: python scripts/build_pyinstaller.py --clean
+
+      - name: Build Flatpak bundle
+        run: bash scripts/build_flatpak.sh
+
+      - name: Download appimagetool
+        run: |
+          curl -L https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -o /tmp/appimagetool
+          chmod +x /tmp/appimagetool
+
+      - name: Build AppImage
+        run: APPIMAGETOOL=/tmp/appimagetool bash scripts/build_appimage.sh
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installers
+          path: |
+            dist/CAMSoftware/**
+            build/CAMSoftware.flatpak
+            build/CAMSoftware-x86_64.AppImage
+          if-no-files-found: error
