@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cam-software-test"
+version = "0.1.0"
+description = "Early-stage CAM software test app with cross-platform packaging assets."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+packaging = [
+  "pyinstaller>=6.11",
+]
+
+[project.scripts]
+cam-cli = "cam.cli:main"
+cam-desktop = "cam.app:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
